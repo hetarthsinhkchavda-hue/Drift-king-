@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    // One document per driver name. The document ID is the name in lowercase
+    // with spaces and underscores removed, so "Max Verstappen" and
+    // "max_verstappen" are the same name. It can be created once and never changed.
+    match /names/{key} {
+      allow read: if true;
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && key.matches('^[a-z0-9]{3,16}$')
+                    && request.resource.data.keys().hasOnly(['uid', 'name']);
+      allow update, delete: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.keys().hasOnly(['driverName', 'nameKey', 'createdAt'])
+                    && getAfter(/databases/$(database)/documents/names/$(request.resource.data.nameKey)).data.uid == uid;
+      allow update: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.driverName == resource.data.driverName
+                    && request.resource.data.nameKey == resource.data.nameKey;
+      allow delete: if false;
+    }
+
+    // Best lap times (one document per player per map). Only a faster time can replace an old one.
+    match /scores/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && id.matches('.*_' + request.auth.uid)
+                    && request.resource.data.keys().hasOnly(['uid', 'name', 'map', 'time', 'at'])
+                    && request.resource.data.time is number
+                    && request.resource.data.time > 15 && request.resource.data.time < 1000;
+      allow update: if signedIn()
+                    && resource.data.uid == request.auth.uid
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.time is number
+                    && request.resource.data.time > 15
+                    && request.resource.data.time < resource.data.time;
+      allow delete: if false;
+    }
+  }
+}
