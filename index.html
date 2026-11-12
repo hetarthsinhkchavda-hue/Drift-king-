@@ -109,7 +109,12 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 <div id="lapsel" style="display:flex;gap:2vw"><button class="btn ghost lp" data-l="3" style="padding:.8vh 3vw">3 LAPS</button><button class="btn ghost lp" data-l="5" style="padding:.8vh 3vw">5 LAPS</button></div>
 <button class="btn" id="mgo">RACE</button></div>
 <div class="s" id="pmenu"><h2>PAUSED</h2><button class="btn" id="presume">RESUME</button><button class="btn ghost" id="prestart">RESTART</button><button class="btn ghost" id="psnd">🔊 SOUND ON</button><button class="btn ghost" id="pquit">✕ HOME</button></div>
-<div class="s" id="mp"><div class="gl" style="display:flex;flex-direction:column;align-items:center;gap:1vh;padding:2vh 3vw;min-width:32vw;max-width:40vw"><div class="av" id="mpav"></div><b id="mpn" style="font-size:3.2vh"></b><small id="mpd" style="opacity:.8;text-align:center"></small><button class="btn ghost" id="mpe" style="font-size:2.2vh;padding:.8vh 2vw">✎ EDIT PROFILE</button></div>
+<div class="s" id="mp"><div class="gl" style="display:flex;flex-direction:column;align-items:center;gap:1vh;padding:2vh 3vw;min-width:32vw;max-width:40vw"><div class="av" id="mpav"></div><b id="mpn" style="font-size:3.2vh"></b><small id="mpd" style="opacity:.8;text-align:center"></small><button class="btn ghost" id="mpe" style="font-size:2.2vh;padding:.8vh 2vw">✎ EDIT PROFILE</button>
+<div style="display:flex;flex-direction:column;align-items:center;gap:.7vh;margin-top:.6vh;width:100%">
+<small id="authstatus" style="opacity:.85;text-align:center">Checking account…</small>
+<button class="btn ghost" id="authgoogle" style="font-size:2.1vh;padding:.8vh 2vw">Continue with Google</button>
+<small id="authnote" style="opacity:.65;text-align:center;max-width:32vw">Guest progress stays on this device until you link an account.</small>
+</div></div>
 <div style="display:flex;flex-direction:column;gap:2vh;align-items:center"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:5vh">MULTIPLAYER</h2><button class="btn mpb" id="mpr">🏁 RACE</button><button class="btn ghost mpb" id="mpg">🎮 GAMES</button></div>
 <button class="btn ghost" id="mpback" style="position:fixed;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px))">◀ BACK</button></div>
 <div class="s" id="lob"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:4.6vh">WAITING FOR RACERS</h2><div style="font-size:11vh;font-weight:900;line-height:1" id="lobt">30</div><div id="lobc" style="font-weight:800;opacity:.85"></div><div id="lobl"></div><button class="btn ghost" id="lobx" style="font-size:2.4vh;padding:1vh 4vw">✕ CANCEL</button></div>
@@ -686,12 +691,45 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function nameTag(txt){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.fillStyle='rgba(0,0,0,.6)';x.fillRect(0,6,256,52);x.font='bold 32px system-ui,sans-serif';x.textAlign='center';x.fillStyle='#fff';x.fillText(txt,128,44);
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(5,1.25,1);s.position.y=3.6;s.renderOrder=10;return s}
 function mpProf(){$('mpav').innerHTML=avIn(prof.pic);$('mpn').textContent=prof.name;$('mpd').textContent=prof.desc||'No description yet'}
-function mpOpen(){au();wRefresh();mpProf();go('mp')}
+function mpOpen(){au();wRefresh();mpProf();go('mp');fbInit().then(authUI).catch(()=>{const s=$('authstatus');if(s)s.textContent='Offline — guest mode unavailable until connected'})}
 const fbErr=e=>{const c=String(e&&(e.code||e.message)||'');if(c==='cfg')return'Multiplayer is not set up yet (Firebase config is missing).';if(/operation-not-allowed|admin-restricted/.test(c))return'Anonymous sign-in is turned off in Firebase. Enable it under Authentication > Sign-in method.';if(/PERMISSION_DENIED|permission/i.test(c))return'The database rules are blocking multiplayer. Update the Realtime Database rules.';if(/network|net|timeout/i.test(c))return'No connection. Check your internet and try again.';return'Could not connect ('+c.slice(0,60)+'). Try again.'};
 function fbInit(){if(fbP)return fbP;fbP=new Promise((ok,no)=>{if(!FB_CONFIG.apiKey)return no(new Error('cfg'));
  const L=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(new Error('net'));document.head.appendChild(s)}),B='https://www.gstatic.com/firebasejs/10.12.2/firebase-';
- L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')].concat(ECON==='server'?[L(B+'functions-compat.js')]:[]))).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);if(ECON==='server')FN=firebase.app().functions('asia-southeast1');return firebase.auth().signInAnonymously()}).then(c=>{MP.uid=c.user.uid;ok()}).catch(no);setTimeout(()=>no(new Error('timeout')),15000)});
+ L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')].concat(ECON==='server'?[L(B+'functions-compat.js')]:[]))).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);if(ECON==='server')FN=firebase.app().functions('asia-southeast1');const a=firebase.auth();return a.currentUser?Promise.resolve({user:a.currentUser}):a.signInAnonymously()}).then(c=>{MP.uid=c.user.uid;authUI();firebase.auth().onAuthStateChanged(u=>{if(u){MP.uid=u.uid;authUI();if(ECON==='server')wRefresh()}});firebase.auth().getRedirectResult().then(r=>{if(r&&r.user){MP.uid=r.user.uid;authUI();tst('Google account linked')}}).catch(e=>{console.log('Google sign-in:',e);authError(e)});ok()}).catch(no);setTimeout(()=>no(new Error('timeout')),15000)});
  const f=fbP;f.catch(()=>{fbP=null});return f}
+
+function authUI(){
+ const a=window.firebase&&firebase.auth?firebase.auth():null,u=a&&a.currentUser;
+ const s=$('authstatus'),b=$('authgoogle'),n=$('authnote');if(!s||!b)return;
+ if(!u){s.textContent='Account status unavailable';b.textContent='Try again';return}
+ const linked=u.providerData&&u.providerData.some(p=>p.providerId==='google.com');
+ s.textContent=linked?'Google account connected':'Playing as Guest';
+ b.textContent=linked?'Google connected':'Link Google account';
+ b.disabled=!!linked;
+ n.textContent=linked?'Your player account is linked. Your wallet can be saved to this account when server rewards are enabled.':'Link Google to keep this player identity if you change devices. Guest progress may be lost if browser data is cleared.';
+}
+function authError(e){
+ const c=String(e&&(e.code||e.message)||'');
+ if(c.includes('unauthorized-domain'))return pop('Google sign-in needs this website added in Firebase Console → Authentication → Settings → Authorized domains.');
+ if(c.includes('operation-not-allowed'))return pop('Enable Google under Firebase Console → Authentication → Sign-in method.');
+ if(c.includes('credential-already-in-use')||c.includes('account-exists-with-different-credential'))return pop('That Google account is already connected to another player account. To protect existing coins and cars, this game has not merged the accounts.');
+ if(c.includes('popup-closed'))return tst('Google sign-in was cancelled');
+ return pop('Google sign-in could not finish. Check Firebase Google sign-in settings and try again.');
+}
+async function linkGoogle(){
+ try{
+  await fbInit();
+  const a=firebase.auth(),u=a.currentUser;
+  if(!u)return pop('Guest account is not ready yet. Please try again.');
+  if(u.providerData&&u.providerData.some(p=>p.providerId==='google.com'))return authUI();
+  const p=new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({prompt:'select_account'});
+  // Redirect works more reliably than popups in mobile browsers and preserves the guest UID when linking.
+  if(u.isAnonymous)await a.currentUser.linkWithRedirect(p);
+  else await a.signInWithRedirect(p);
+ }catch(e){console.log(e);authError(e)}
+}
+
 function lobUI(){const ks=mkeys();$('lobl').innerHTML=ks.map(k=>{const q=clean(MP.pl[k]);return'<div class="pr"><div class="av">'+avIn(q.p)+'</div>'+esc(q.n)+(k===MP.uid?' (you)':'')+'</div>'}).join('');$('lobc').textContent=ks.length+'/7 racers · minimum 2'}
 async function mpJoin(){
  try{await fbInit()}catch(e){console.log(e);return pop(fbErr(e))}
@@ -761,26 +799,13 @@ const vById=id=>VEH.find(v=>v.id===id)||VEH[0],vOfCard=k=>VEH.find(v=>v.ci===k)|
  vStat=v=>owns(v.id)?'✅ Unlocked':[v.inr?'₹'+v.inr+(WL.paid&&WL.paid[v.id]?' · Purchased':' · Not purchased'):'',v.coins?'🪙 '+v.coins.toLocaleString():''].filter(Boolean).join(' + '),
  vList=()=>[...CARDS.map((c,i)=>vOfCard(i)),...VEH.filter(v=>v.ci===null)];
 function vInfo(v){return v.n+'\n'+vStat(v)+'\n'+(v.inr&&v.coins?'Needs BOTH the ₹'+v.inr+' purchase AND '+v.coins.toLocaleString()+' coins earned by racing.':v.inr?'Real-money purchase (₹'+v.inr+').':'')+'\nPayments are not connected yet. 3D model coming soon.'}
-function wUI(){if(ECON==='off')return;if(ECON==='test')dPanel();document.querySelectorAll('.bal').forEach(e=>e.textContent=(WL.ok?'🪙 '+WL.coins.toLocaleString():'🪙 --')+(ECON==='test'?' (TEST)':''));
+function wUI(){if(ECON==='off')return;document.querySelectorAll('.bal').forEach(e=>e.textContent=(WL.ok?'🪙 '+WL.coins.toLocaleString():'🪙 --')+(ECON==='test'?' (TEST)':''));
  const L=vList();[...$('carl').children].forEach((e,j)=>{const v=L[j];if(!v)return;const s=e.querySelector('.vs');if(s)s.textContent=vStat(v);e.lastChild.textContent=(j<CARDS.length&&carSel===j&&owns(v.id))?'✓':(owns(v.id)?'':'🔒')});
  const v=vOfCard(carSel),b=$('vbuy');if(!b)return;if(owns(v.id)){b.style.display='none';return}b.style.display='block';
  if(v.inr&&!(WL.paid&&WL.paid[v.id])){b.textContent='BUY ₹'+v.inr+(v.coins?' + 🪙'+v.coins:'');b.disabled=false}
  else{b.textContent='UNLOCK 🪙'+v.coins;b.disabled=!WL.ok||WL.coins<v.coins}}
 function wLoadLocal(){try{const j=JSON.parse(localStorage.getItem('dk_test_wallet'));if(j){WL.coins=j.coins|0;WL.owned=Object.assign({charger:true},j.owned)}}catch(e){}WL.paid={};WL.ok=1;wUI()}
-const tSave=()=>{try{localStorage.setItem('dk_test_wallet',JSON.stringify({coins:WL.coins,owned:WL.owned}));return true}catch(e){return false}};
-/* TEST MODE ONLY helpers (used by the Developer Testing Panel and the Garage unlock button). Local storage only - never Firebase. */
-function tBuy(id){const v=vById(id);
- if(ECON!=='test')return{ok:false,msg:'Test mode only'};
- if(owns(id))return{ok:false,msg:'Already owned — you were not charged'};
- if(v.inr)return{ok:false,msg:v.n+' is a real-money car — cannot be bought in test mode'};
- if(!(v.coins>0))return{ok:false,msg:'Not for sale'};
- if(WL.coins<v.coins)return{ok:false,msg:'Insufficient coins: need '+(v.coins-WL.coins)+' more — you were not charged'};
- const n={coins:WL.coins-v.coins,owned:Object.assign({},WL.owned,{[id]:true})};
- try{localStorage.setItem('dk_test_wallet',JSON.stringify(n))}catch(e){return{ok:false,msg:'Could not save the purchase — you were not charged'}}
- WL.coins=n.coins;WL.owned=n.owned;wUI();return{ok:true,msg:'✅ '+v.n+' purchased for '+v.coins+' test coins'}}
-function tAdd(n){if(ECON!=='test')return;const old=WL.coins;WL.coins+=n;if(!tSave())WL.coins=old;wUI()}
-function tReset(){if(ECON!=='test')return;WL.coins=0;WL.owned={charger:true};try{localStorage.removeItem('dk_test_wallet');localStorage.removeItem('dk_test_claims')}catch(e){}if(!owns(vOfCard(carSel).id))setCar(1);wUI()}
-function dPanel(){const e=$('dbal');if(!e)return;e.textContent='Balance: 🪙 '+WL.coins.toLocaleString();$('down').innerHTML=VEH.filter(v=>v.ci!==null).map(v=>v.n+': '+(owns(v.id)?'✅ owned':'🔒 locked')).join('<br>')}
+const tSave=()=>{try{localStorage.setItem('dk_test_wallet',JSON.stringify({coins:WL.coins,owned:WL.owned}))}catch(e){}};
 function showR(){$('podc').textContent=MP.rtext;const f=$('fin');if(f.style.display==='block')f.insertAdjacentHTML('beforeend','<div style="font-size:max(14px,2.8vh);color:#ffd400">'+esc(MP.rtext)+'</div>')}
 /* TEST MODE ONLY: local fake coins. Never sent to Firebase, never real. */
 function testClaim(){const rid=MP.rid,ks=Object.keys(MP.res).sort((a,b)=>(+MP.res[a].ts||0)-(+MP.res[b].ts||0)),rk=ks.indexOf(MP.uid)+1,n=MP.ord.length;
@@ -789,7 +814,7 @@ function testClaim(){const rid=MP.rid,ks=Object.keys(MP.res).sort((a,b)=>(+MP.re
 let wOn=0;function wRefresh(){if(ECON==='test'){wLoadLocal();return}if(ECON!=='server')return;fbInit().then(()=>{if(wOn)return;wOn=1;firebase.database().ref('wallets/'+MP.uid).on('value',s=>{const w=s.val()||{};WL.coins=w.coins|0;WL.owned=Object.assign({charger:true},w.owned);WL.paid=w.paid||{};WL.ok=1;wUI()})}).catch(()=>wUI())}
 async function vBuy(){const v=vOfCard(carSel);if(owns(v.id))return;
  if(v.inr&&!(WL.paid&&WL.paid[v.id]))return pop('Real-money purchases are not connected yet.\nThey need a verified payment backend (Google Play / Razorpay) before anything can be bought.');
- if(ECON==='test')return tst(tBuy(v.id).msg);if(ECON!=='server')return;try{await fbInit();const d=(await FN.httpsCallable('unlockVehicle')({id:v.id})).data;WL.coins=d.coins;WL.owned=Object.assign({charger:true},d.owned);WL.paid=d.paid||{};WL.ok=1;wUI();
+ if(ECON==='test'){if(WL.coins<v.coins)return tst('Not enough test coins');WL.coins-=v.coins;WL.owned[v.id]=true;tSave();wUI();return tst('🧪 '+v.n+' unlocked (TEST)')}if(ECON!=='server')return;try{await fbInit();const d=(await FN.httpsCallable('unlockVehicle')({id:v.id})).data;WL.coins=d.coins;WL.owned=Object.assign({charger:true},d.owned);WL.paid=d.paid||{};WL.ok=1;wUI();
   tst(d.status==='unlocked'?'🎉 '+v.n+' unlocked!':({'not-enough-coins':'Not enough coins','payment-required':'Purchase required'}[d.status]||'Already owned'))}catch(e){tst('Could not unlock: '+(e.message||'error'))}}
 if(ECON!=='off'){document.body.classList.add('econ');
 VEH.filter(v=>v.ci===null).forEach(v=>{const e=document.createElement('div');e.className='mp';e.innerHTML='<div>'+v.ic+' '+v.n+'<small>Model coming soon</small></div><span>🔒</span>';e.onclick=()=>pop(vInfo(v));$('carl').appendChild(e)});
@@ -800,15 +825,11 @@ $('mpn').insertAdjacentHTML('beforebegin','<div class="bal"></div>');
 {const _s=$('start').onclick;$('start').onclick=function(ev){const v=vOfCard(carSel);if(!owns(v.id)){tst('🔒 '+v.n+' is locked — unlock it in the Garage');setCar(1);wUI();return}return _s.call(this,ev)}}
 {const _r=$('mpr').onclick;$('mpr').onclick=()=>{const v=vOfCard(carSel);if(!owns(v.id)){setCar(1);tst('🔒 '+v.n+' is locked — using Dodge Charger')}_r()}}
 if(ECON==='test'){document.querySelector('.side h3').insertAdjacentHTML('afterend','<div style="font-weight:900;font-size:max(11px,1.9vh);color:#fff;background:#c0392b;border-radius:8px;padding:.3vh 1vw;display:inline-block">🧪 TEST COINS – NOT REAL</div>');
- const S='style="font-size:max(11px,1.8vh);padding:.5vh 1.2vw"';
- $('dots').insertAdjacentHTML('beforebegin','<div id="dev" style="background:rgba(192,57,43,.25);border:1px dashed #c0392b;border-radius:10px;padding:.6vh 1vw;margin-bottom:.6vh;font-size:max(11px,1.9vh)"><button class="btn ghost" id="dtog" style="width:100%;font-size:max(12px,2vh);padding:.5vh 0">🧪 DEV PANEL (TEST MODE) ▾</button><div id="dbody" style="display:none"><b id="dbal"></b><div id="down" style="margin:.4vh 0"></div><div style="display:flex;gap:1vw;flex-wrap:wrap"><button class="btn ghost" id="d100" '+S+'>+100 COINS</button><button class="btn ghost" id="d300" '+S+'>+300 COINS</button><button class="btn ghost" id="drst" '+S+'>RESET</button></div><div style="display:flex;gap:1vw;flex-wrap:wrap;margin-top:.5vh"><button class="btn ghost" id="dbp" '+S+'>BUY PORSCHE 🪙100</button><button class="btn ghost" id="dbl" '+S+'>BUY LAMBO 🪙300</button></div><div id="dmsg" style="margin-top:.4vh;font-weight:800"></div></div></div>');
- const dm=r=>{$('dmsg').textContent=r.msg;tst(r.msg)};
- $('dtog').onclick=()=>{const b=$('dbody');b.style.display=b.style.display==='none'?'block':'none'};
- $('d100').onclick=()=>{tAdd(100);dm({msg:'+100 test coins'})};$('d300').onclick=()=>{tAdd(300);dm({msg:'+300 test coins'})};
- $('drst').onclick=()=>{tReset();dm({msg:'Test economy reset: 0 coins, only the Dodge Charger owned'})};
- $('dbp').onclick=()=>dm(tBuy('porsche'));$('dbl').onclick=()=>dm(tBuy('lambo'));wLoadLocal()}
+ $('dots').insertAdjacentHTML('beforebegin','<button class="btn ghost" id="vtest" style="font-size:max(12px,2vh);padding:.7vh 2vw;width:100%;margin-bottom:.6vh">+100 TEST COINS</button>');$('vtest').onclick=()=>{WL.coins+=100;tSave();wUI()};wLoadLocal()}
 }
 wUI();
+$('authgoogle').onclick=linkGoogle;
+$('mpback').addEventListener('click',()=>{setTimeout(authUI,100)});
 /* ===== /VEHICLES & WALLET ===== */
 
 
