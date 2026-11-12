@@ -92,6 +92,8 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 ::selection{background:transparent}
 #pe input,#pe textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
 #pe input::selection,#pe textarea::selection{background:rgba(255,193,90,.5)}
+.econ #carl{max-height:30vh;overflow-y:auto;touch-action:pan-y}#popm{white-space:pre-line}.bal{font-weight:900;color:#ffd400;font-size:max(14px,2.6vh)}
+#vbuy{font-size:max(13px,2.2vh);padding:.8vh 2vw;width:100%;margin-bottom:.6vh}#vbuy[disabled]{opacity:.5}
 </style></head><body><div id="load"><b>DRIFT</b><i>KING</i><div class="lb"><u id="lbar"></u></div><small>LOADING…</small></div>
 <script>window.onerror=function(m,u,l,c){var d=document.getElementById('err');if(!d){d=document.createElement('div');d.id='err';d.style.cssText='position:fixed;left:8px;right:8px;bottom:4px;z-index:200;background:rgba(160,0,0,.85);color:#fff;font:11px monospace;padding:4px 8px;border-radius:6px;pointer-events:none';document.body.appendChild(d)}d.textContent=m+' @'+l+':'+c};(function(){var b=document.getElementById('lbar'),t0=Date.now(),done=0,iv=setInterval(function(){b.style.width=Math.min(95,(Date.now()-t0)/4000*95)+'%'},50);window.loadDone=function(){if(done)return;done=1;setTimeout(function(){clearInterval(iv);b.style.width='100%';setTimeout(function(){var l=document.getElementById('load');l.style.opacity=0;setTimeout(function(){l.style.display='none'},400)},250)},Math.max(0,4000-(Date.now()-t0)))};setTimeout(function(){window.loadDone()},12000)})()</script>
 <div id="hbg"><div id="hw"></div></div>
@@ -112,7 +114,7 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 <button class="btn ghost" id="mpback" style="position:fixed;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px))">◀ BACK</button></div>
 <div class="s" id="lob"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:4.6vh">WAITING FOR RACERS</h2><div style="font-size:11vh;font-weight:900;line-height:1" id="lobt">30</div><div id="lobc" style="font-weight:800;opacity:.85"></div><div id="lobl"></div><button class="btn ghost" id="lobx" style="font-size:2.4vh;padding:1vh 4vw">✕ CANCEL</button></div>
 <div class="s" id="pe"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:4.2vh">YOUR PROFILE</h2><div style="display:flex;align-items:center;gap:2vw"><div class="av" id="pep"></div><button class="btn ghost" id="pec" style="font-size:2.2vh;padding:1vh 2vw">📷 PICTURE</button></div><input id="pen" maxlength="16" placeholder="Driver name (3-16)"><textarea id="ped" maxlength="60" placeholder="Description (max 60)"></textarea><div style="display:flex;gap:2vw"><button class="btn" id="pes" style="font-size:2.6vh;padding:1.2vh 4vw">SAVE</button><button class="btn ghost" id="pex" style="font-size:2.6vh;padding:1.2vh 3vw">CANCEL</button></div><input type="file" id="pef" accept="image/*" hidden></div>
-<div class="s" id="pod"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:4.4vh">🏆 RACE RESULTS</h2><div id="podr"></div><div id="podo" style="display:flex;flex-wrap:wrap;gap:1vh;justify-content:center;max-width:90vw"></div><button class="btn" id="podh" style="font-size:2.8vh;padding:1.2vh 5vw">🏠 HOME</button></div>
+<div class="s" id="pod"><h2 style="margin:0;color:#ffc15a;letter-spacing:4px;font-style:italic;font-size:4.4vh">🏆 RACE RESULTS</h2><div id="podr"></div><div id="podo" style="display:flex;flex-wrap:wrap;gap:1vh;justify-content:center;max-width:90vw"></div><div id="podc" style="font-weight:900;font-size:3vh;color:#ffd400"></div><button class="btn" id="podh" style="font-size:2.8vh;padding:1.2vh 5vw">🏠 HOME</button></div>
 <div class="s" id="pop"><div class="gl" style="text-align:center;padding:3vh 4vw;max-width:80vw;font-weight:800;font-size:max(15px,3vh)" id="popm"></div><button class="btn" id="popok" style="font-size:2.8vh;padding:1.2vh 6vw">OK</button></div>
 <div id="toast"></div>
 
@@ -161,7 +163,7 @@ addEventListener('keydown',e=>K[e.key.toLowerCase()]=1);addEventListener('keyup'
 const cols=[0x2e7bff,0xe5322d,0x3dc84a,0xffc21a],dots=$('dots');let ci=0;
 cols.forEach((c,i)=>{const d=document.createElement('div');d.className='dot'+(i?'':' sel');d.style.background='#'+c.toString(16).padStart(6,'0');d.onclick=()=>{ci=i;if(PM)PM.paint(cols[ci]);[...dots.children].forEach((e,j)=>e.classList.toggle('sel',j==i))};dots.appendChild(d)});
 
-document.addEventListener('gesturestart',e=>e.preventDefault());document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gesturestart',e=>e.preventDefault());document.addEventListener('touchmove',e=>{if(!(e.target.closest&&e.target.closest('#carl')))e.preventDefault()},{passive:false});
 const cv=$('g'),rd=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});rd.setPixelRatio(Math.min(devicePixelRatio,2));
 const sc=new THREE.Scene(),SK=0xb4e0ff;sc.background=new THREE.Color(SK);sc.fog=new THREE.Fog(SK,260,1250);
 const cam=new THREE.PerspectiveCamera(65,1,.5,1500);
@@ -674,36 +676,38 @@ if(shk>0){cam.position.x+=(rn()-.5)*shk;cam.position.y+=(rn()-.5)*shk*.6;shk=Mat
 /* ===== MULTIPLAYER ===== */
 const FB_CONFIG={apiKey:"AIzaSyBTL8dVL1PzTe4e4YBAAWw5lCBwGladcHw",authDomain:"drift-king-5a194.firebaseapp.com",databaseURL:"https://drift-king-5a194-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drift-king-5a194",storageBucket:"drift-king-5a194.firebasestorage.app",messagingSenderId:"177320450421",appId:"1:177320450421:web:d089913a1086c461591b3c",measurementId:"G-HSVQKKMMFW"};
 const MP={on:0,rid:null,uid:null,off:0,pl:{},st:{},res:{},prof:{},ord:[],rem:[],n:0};
-let prof=(()=>{try{return JSON.parse(localStorage.getItem('dk_prof'))}catch(e){return null}})()||{name:'Driver'+(rn()*900+100|0),desc:'',pic:''},tmpPic='',fbP=null;
+let prof=(()=>{try{return JSON.parse(localStorage.getItem('dk_prof'))}catch(e){return null}})()||{name:'Driver'+(rn()*900+100|0),desc:'',pic:''},tmpPic='',fbP=null,FN=null;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
  avIn=q=>q?'<img src="'+q+'" style="width:100%;height:100%;object-fit:cover">':'🏎️',
- clean=q=>({n:String(q.n||'Racer').slice(0,16),d:String(q.d||'').slice(0,60),p:/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]{20,14000}$/.test(q.p||'')?q.p:'',c:(q.c|0),m:(q.m===undefined||q.m===null)?1:Math.max(0,Math.min(CARDS.length-1,q.m|0))}),
+ clean=q=>({n:String(q.n||'Racer').slice(0,16),d:String(q.d||'').slice(0,60),p:/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]{20,14000}$/.test(q.p||'')?q.p:'',c:(q.c|0),v:VEH.some(x=>x.id===q.v)?q.v:(q.m===0?'porsche':q.m===2?'lambo':'charger'),m:(q.m===undefined||q.m===null)?1:Math.max(0,Math.min(CARDS.length-1,q.m|0))}),
  tst=m=>{const e=$('toast');e.textContent=m;e.style.display='block';clearTimeout(tst.h);tst.h=setTimeout(()=>e.style.display='none',2200)},
  pop=(m,cb)=>{$('popm').textContent=m;$('popok').onclick=()=>{$('pop').classList.remove('on');cb&&cb()};$('pop').classList.add('on')},
  mkeys=()=>Object.keys(MP.pl).sort((a,b)=>((MP.pl[a].j||1e15)-(MP.pl[b].j||1e15))||(a<b?-1:1)),nw=()=>Date.now()+MP.off;
 function nameTag(txt){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.fillStyle='rgba(0,0,0,.6)';x.fillRect(0,6,256,52);x.font='bold 32px system-ui,sans-serif';x.textAlign='center';x.fillStyle='#fff';x.fillText(txt,128,44);
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(5,1.25,1);s.position.y=3.6;s.renderOrder=10;return s}
 function mpProf(){$('mpav').innerHTML=avIn(prof.pic);$('mpn').textContent=prof.name;$('mpd').textContent=prof.desc||'No description yet'}
-function mpOpen(){au();mpProf();go('mp')}
+function mpOpen(){au();wRefresh();mpProf();go('mp')}
 const fbErr=e=>{const c=String(e&&(e.code||e.message)||'');if(c==='cfg')return'Multiplayer is not set up yet (Firebase config is missing).';if(/operation-not-allowed|admin-restricted/.test(c))return'Anonymous sign-in is turned off in Firebase. Enable it under Authentication > Sign-in method.';if(/PERMISSION_DENIED|permission/i.test(c))return'The database rules are blocking multiplayer. Update the Realtime Database rules.';if(/network|net|timeout/i.test(c))return'No connection. Check your internet and try again.';return'Could not connect ('+c.slice(0,60)+'). Try again.'};
 function fbInit(){if(fbP)return fbP;fbP=new Promise((ok,no)=>{if(!FB_CONFIG.apiKey)return no(new Error('cfg'));
  const L=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(new Error('net'));document.head.appendChild(s)}),B='https://www.gstatic.com/firebasejs/10.12.2/firebase-';
- L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')])).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);return firebase.auth().signInAnonymously()}).then(c=>{MP.uid=c.user.uid;ok()}).catch(no);setTimeout(()=>no(new Error('timeout')),15000)});
+ L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')].concat(ECON==='server'?[L(B+'functions-compat.js')]:[]))).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);if(ECON==='server')FN=firebase.app().functions('asia-southeast1');return firebase.auth().signInAnonymously()}).then(c=>{MP.uid=c.user.uid;ok()}).catch(no);setTimeout(()=>no(new Error('timeout')),15000)});
  const f=fbP;f.catch(()=>{fbP=null});return f}
 function lobUI(){const ks=mkeys();$('lobl').innerHTML=ks.map(k=>{const q=clean(MP.pl[k]);return'<div class="pr"><div class="av">'+avIn(q.p)+'</div>'+esc(q.n)+(k===MP.uid?' (you)':'')+'</div>'}).join('');$('lobc').textContent=ks.length+'/7 racers · minimum 2'}
 async function mpJoin(){
  try{await fbInit()}catch(e){console.log(e);return pop(fbErr(e))}
  try{const db=firebase.database();MP.off=(await db.ref('.info/serverTimeOffset').once('value')).val()||0;let rid,start;
-  await db.ref('open').transaction(c=>{const t=nw();if(c&&c.start>t+2000&&(c.n||0)<7){rid=c.id;start=c.start;c.n=(c.n||0)+1;return c}rid=db.ref('rooms').push().key;start=t+30000;return{id:rid,start:start,n:1}});
+  let mine=false;MP.pool=vOfCard(carSel).cat==='s'?'openS':'open';await db.ref(MP.pool).transaction(c=>{const t=nw();mine=false;if(c&&c.start>t+2000&&(c.n||0)<7){rid=c.id;start=c.start;c.n=(c.n||0)+1;return c}mine=true;rid=db.ref('rooms').push().key;start=t+30000;return{id:rid,start:start,n:1}});if(mine)await db.ref('rooms/'+rid+'/meta').set({start});
   Object.assign(MP,{rid,start,pl:{},st:{},res:{},on:0,pod:0});const R=db.ref('rooms/'+rid);MP.R=R;
-  MP.me={n:prof.name,d:prof.desc,p:prof.pic,c:ci,m:carSel,j:firebase.database.ServerValue.TIMESTAMP};await R.child('p/'+MP.uid).set(MP.me);R.child('p/'+MP.uid).onDisconnect().remove();
+  MP.me={n:prof.name,d:prof.desc,p:prof.pic,c:ci,m:carSel,v:vOfCard(carSel).id,j:firebase.database.ServerValue.TIMESTAMP};await R.child('p/'+MP.uid).set(MP.me);R.child('p/'+MP.uid).onDisconnect().remove();
   let was=0;MP.cn=db.ref('.info/connected');MP.cn.on('value',s=>{if(s.val()){if(was===2){tst('Reconnected');if(MP.R){MP.R.child('p/'+MP.uid).set(MP.me);MP.R.child('p/'+MP.uid).onDisconnect().remove()}}was=1}else if(was){was=2;tst('Connection lost... reconnecting')}});
   R.child('p').on('value',s=>{MP.pl=s.val()||{};lobUI();if(MP.on)mpRoster()});go('lob');lobUI();
   clearInterval(MP.tm);MP.tm=setInterval(()=>{const l=MP.start-nw();$('lobt').textContent=Math.max(0,Math.ceil(l/1000));if(l<=0){clearInterval(MP.tm);mpGo()}},250)
  }catch(e){console.log(e);mpLeave();pop(fbErr(e))}}
+async function claimCoins(){if(ECON==='off'){MP.rtext='';return}if(ECON==='test')return testClaim();MP.rtext='Checking reward…';try{const r=await FN.httpsCallable('claimReward')({rid:MP.rid}),d=r.data;WL.coins=d.balance;wUI();MP.rtext=d.coins>0?'+'+d.coins+' 🪙 earned!':({'did-not-finish':'No coins — did not finish','too-fast':'Result rejected (finish time not plausible)','already-claimed':'Reward already collected','rate-limited':'No coins (too many races in a row)','daily-cap':'Daily coin limit reached'}[d.why]||'No coins this race')}catch(e){MP.rtext='Reward not verified: '+(e.message||'error')}
+ $('podc').textContent=MP.rtext;const f=$('fin');if(f.style.display==='block')f.insertAdjacentHTML('beforeend','<div style="font-size:max(14px,2.8vh);color:#ffd400">'+esc(MP.rtext)+'</div>')}
 function mpGo(){const ks=mkeys();
  if(ks.length<2){mpLeave();go('home');return pop('Not enough racers joined. Back to home — try again!')}
- const db=firebase.database(),rid=MP.rid;db.ref('open').transaction(c=>c&&c.id===rid?null:c);
+ const db=firebase.database(),rid=MP.rid;db.ref(MP.pool||'open').transaction(c=>c&&c.id===rid?null:c);try{MP.R.child('started/'+MP.uid).set(firebase.database.ServerValue.TIMESTAMP).catch(()=>{})}catch(e){}MP.rtext='';
  MP.ord=ks.slice(0,7);if(MP.ord.indexOf(MP.uid)<0){mpLeave();go('home');return pop('That race was full. Try again!')}
  MP.n=MP.ord.length;MP.prof={};MP.ord.forEach(u=>MP.prof[u]=clean(MP.pl[u]||{}));MP.on=1;
  MP.R.child('live').on('value',s=>{MP.st=s.val()||{}});MP.R.child('res').on('value',s=>{MP.res=s.val()||{};mpCheck()});
@@ -711,11 +715,11 @@ function mpGo(){const ks=mkeys();
 function mpUnskin(a){const s=a.sk;if(!s)return;s.add.forEach(o=>a.g.remove(o));s.hid.forEach(o=>o.visible=true);a.w=s.w0;a.sk=null}
 function mpSkin(a,k,col){mpUnskin(a);const C=CARDS[k];if(k===1||!C||!C.sp){if(a.w)a.w.paint(col);return}
  const hid=a.g.children.filter(o=>o.visible&&o!==a.tag);hid.forEach(o=>o.visible=false);const n0=a.g.children.length,mw=buildCar(C.sp,col,a.g);a.sk={hid,add:a.g.children.slice(n0),w0:a.w};a.w=mw}
-function mpReset(){const gp=k=>{const dist=7+(k>>1)*8+(k%2?3:0),f=SI-dist/SL;return[f,(Math.floor(f)+N)%N,k%2?2.3:-2.3]};
+function mpReset(){if(ECON!=='off'&&vOfCard(carSel).cat!=='s')CS=CARDS[1].cs;const gp=k=>{const dist=7+(k>>1)*8+(k%2?3:0),f=SI-dist/SL;return[f,(Math.floor(f)+N)%N,k%2?2.3:-2.3]};
  const[f,j,o]=gp(MP.ord.indexOf(MP.uid));h=TH[j];ch=h;vx=vz=0;px=TP[j][0]+TN[j][0]*o;pz=TP[j][1]+TN[j][1]*o;py=TY[j];pnk=j;cum=f;MP.rem=[];let q=0;
  MP.ord.forEach((u,k)=>{if(u===MP.uid)return;const a=AI[q++];if(!a)return;const[f2,j2,o2]=gp(k),pr=MP.prof[u]||clean({});
   a.p=f2;a.o=o2;a.i=j2;a.cv=0;a.f=0;a.g.visible=true;a.g.position.set(TP[j2][0]+TN[j2][0]*o2,TY[j2],TP[j2][1]+TN[j2][1]*o2);a.g.rotation.y=TH[j2];
-  mpSkin(a,pr.m,cols[((pr.c%4)+4)%4]);if(a.tag)a.g.remove(a.tag);a.tag=nameTag(pr.n);a.g.add(a.tag);MP.rem.push({u,a,s:0})});
+  mpSkin(a,vById(pr.v).ci===null?1:vById(pr.v).ci,cols[((pr.c%4)+4)%4]);if(a.tag)a.g.remove(a.tag);a.tag=nameTag(pr.n);a.g.add(a.tag);MP.rem.push({u,a,s:0})});
  for(;q<AI.length;q++){mpUnskin(AI[q]);AI[q].g.visible=false;AI[q].p=-1e9}shadowCars()}
 function mpFrame(d){if(!MP.on||!MP.R)return;MP.tw=(MP.tw||0)-d;
  if(MP.tw<=0){MP.tw=.07;MP.R.child('live/'+MP.uid).set({x:px,z:pz,y:py,h:h,p:cum,v:Math.hypot(vx,vz),t:Date.now()})}
@@ -724,7 +728,7 @@ function mpFrame(d){if(!MP.on||!MP.R)return;MP.tw=(MP.tw||0)-d;
   if(!r.s){g.position.set(s.x,s.y||0,s.z);g.rotation.y=s.h||0;r.s=1}else{g.position.x+=(s.x-g.position.x)*k;g.position.y+=((s.y||0)-g.position.y)*k;g.position.z+=(s.z-g.position.z)*k;let dh=(s.h||0)-g.rotation.y;dh=Math.atan2(Math.sin(dh),Math.cos(dh));g.rotation.y+=dh*k}
   r.a.p+=((+s.p||0)-r.a.p)*k;r.a.cv=+s.v||0}}
 function mpRoster(){for(const r of MP.rem)if(!MP.pl[r.u]&&!MP.res[r.u]){r.a.g.visible=false;r.a.p=-1e9}}
-function mpDone(t){try{MP.R.child('res/'+MP.uid).set({t:Math.round(t*100)/100,ts:firebase.database.ServerValue.TIMESTAMP})}catch(e){}
+function mpDone(t){try{MP.R.child('res/'+MP.uid).set({t:Math.round(t*100)/100,ts:firebase.database.ServerValue.TIMESTAMP}).then(claimCoins).catch(e=>{MP.rtext='Result not saved'})}catch(e){}
  $('fin').innerHTML='<div style="font-size:4.5vh;font-weight:900">🏁 FINISHED!</div><div style="font-size:max(14px,2.8vh)">Waiting for the other racers…</div>';$('fin').style.display='block'}
 function mpCheck(){if(!MP.on||MP.pod)return;const ks=Object.keys(MP.res);if(!ks.length)return;const first=Math.min(...ks.map(k=>+MP.res[k].ts||1e18));
  if(MP.ord.filter(u=>MP.pl[u]||MP.res[u]).every(u=>MP.res[u])||nw()-first>25000)mpPodium()}
@@ -733,17 +737,61 @@ function mpPodium(){MP.pod=1;const ks=Object.keys(MP.res).sort((a,b)=>(+MP.res[a
  box=(u,i)=>'<div class="pdc" style="'+(i?'':'transform:translateY(-3vh);border-color:#ffd400')+'"><div style="font-size:5vh">'+med[i]+'</div><div class="av" style="margin:0 auto">'+avIn(nm(u).p)+'</div><div style="font-size:2.6vh">'+esc(nm(u).n)+'</div><small>'+tm(u)+'</small></div>',top=ks.slice(0,3);
  $('podr').innerHTML=[1,0,2].filter(i=>top[i]).map(i=>box(top[i],i)).join('');
  $('podo').innerHTML=ks.slice(3).map((u,i)=>'<div class="pr">'+(i+4)+'. '+esc(nm(u).n)+' · '+tm(u)+'</div>').join('')+rest.map(u=>'<div class="pr" style="opacity:.6">DNF · '+esc(nm(u).n)+'</div>').join('');
- $('fin').style.display='none';go('pod')}
+ $('fin').style.display='none';$('podc').textContent=MP.rtext||'';go('pod')}
 function mpLeave(){clearInterval(MP.tm);clearInterval(MP.ck);try{if(MP.cn)MP.cn.off()}catch(e){}MP.cn=null;
  try{if(MP.R){const u=MP.uid,R=MP.R;R.child('p/'+u).onDisconnect().cancel();R.child('p/'+u).remove();R.child('live/'+u).remove();R.child('p').off();R.child('live').off();R.child('res').off();
-  if(!MP.on&&MP.rid){const rid=MP.rid;firebase.database().ref('open').transaction(c=>c&&c.id===rid&&c.n>0?(c.n--,c):c)}}}catch(e){}
- if(MP.on){AI.forEach((a,k)=>{if(a.tag){a.g.remove(a.tag);a.tag=null}mpUnskin(a);if(a.w)a.w.paint(AC[k])});$('prestart').style.display=''}
+  if(!MP.on&&MP.rid){const rid=MP.rid;firebase.database().ref(MP.pool||'open').transaction(c=>c&&c.id===rid&&c.n>0?(c.n--,c):c)}}}catch(e){}
+ if(MP.on){CS=CARDS[carSel].cs;AI.forEach((a,k)=>{if(a.tag){a.g.remove(a.tag);a.tag=null}mpUnskin(a);if(a.w)a.w.paint(AC[k])});$('prestart').style.display=''}
  MP.on=0;MP.R=null;MP.rem=[];MP.rid=null}
 $('mpback').onclick=()=>go('home');$('mpg').onclick=()=>tst('Games — coming soon');$('mpr').onclick=()=>mpJoin();$('lobx').onclick=()=>{mpLeave();go('mp')};$('podh').onclick=()=>$('quit').click();
 $('mpe').onclick=()=>{$('pen').value=prof.name;$('ped').value=prof.desc;tmpPic=prof.pic;$('pep').innerHTML=avIn(tmpPic);go('pe')};$('pex').onclick=()=>go('mp');$('pec').onclick=()=>$('pef').click();
 $('pef').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const x=c.getContext('2d'),s=Math.min(im.width,im.height);x.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);tmpPic=c.toDataURL('image/jpeg',.6);$('pep').innerHTML=avIn(tmpPic);URL.revokeObjectURL(u)};im.src=u};
 $('pes').onclick=()=>{const n=$('pen').value.trim();if(n.length<3||n.length>16)return tst('Name must be 3 to 16 characters');prof={name:n,desc:$('ped').value.trim().slice(0,60),pic:tmpPic};try{localStorage.setItem('dk_prof',JSON.stringify(prof))}catch(e){}mpProf();go('mp')};
 /* ===== /MULTIPLAYER ===== */
+/* ===== VEHICLES & WALLET =====
+ To attach a model later: add an entry to CARDS (same shape as the others, with its own builder), then set that vehicle's ci below
+ to the new CARDS index. Vehicle IDs (charger, porsche, lambo, aston, bolide, spaceship) are what multiplayer synchronises. */
+const ECON_SERVER_ENABLED=false; /* keep false until a trusted backend (Cloud Functions or an Admin-SDK worker) is running */
+/* Economy mode: off (default, public) | test (local fake coins) | server (disabled). Switch with the page address: ?mode=test  or  ?dev=1 */
+const ECON=(()=>{const q=new URLSearchParams(location.search),m=q.get('mode')||(q.get('dev')==='1'?'test':'off');return m==='test'?'test':(m==='server'&&ECON_SERVER_ENABLED?'server':'off')})();
+if(ECON==='server')console.log('server mode');
+const VEH=[{id:'charger',n:'Dodge Charger',ci:1},{id:'porsche',n:'Porsche',ci:0,coins:100},{id:'lambo',n:'Lamborghini',ci:2,coins:300},
+ {id:'aston',n:'Aston Martin',ci:null,inr:50,ic:'🏎️'},{id:'bolide',n:'Bugatti Bolide',ci:null,inr:250,ic:'🏎️'},{id:'spaceship',n:'Spaceship',ci:null,inr:499,coins:1000,ic:'🚀',cat:'s'}];
+const vById=id=>VEH.find(v=>v.id===id)||VEH[0],vOfCard=k=>VEH.find(v=>v.ci===k)||VEH[0],WL={coins:0,owned:{charger:true},paid:{},ok:0},owns=id=>ECON==='off'?vById(id).ci!==null:(id==='charger'||!!(WL.owned&&WL.owned[id])),
+ vStat=v=>owns(v.id)?'✅ Unlocked':[v.inr?'₹'+v.inr+(WL.paid&&WL.paid[v.id]?' · Purchased':' · Not purchased'):'',v.coins?'🪙 '+v.coins.toLocaleString():''].filter(Boolean).join(' + '),
+ vList=()=>[...CARDS.map((c,i)=>vOfCard(i)),...VEH.filter(v=>v.ci===null)];
+function vInfo(v){return v.n+'\n'+vStat(v)+'\n'+(v.inr&&v.coins?'Needs BOTH the ₹'+v.inr+' purchase AND '+v.coins.toLocaleString()+' coins earned by racing.':v.inr?'Real-money purchase (₹'+v.inr+').':'')+'\nPayments are not connected yet. 3D model coming soon.'}
+function wUI(){if(ECON==='off')return;document.querySelectorAll('.bal').forEach(e=>e.textContent=(WL.ok?'🪙 '+WL.coins.toLocaleString():'🪙 --')+(ECON==='test'?' (TEST)':''));
+ const L=vList();[...$('carl').children].forEach((e,j)=>{const v=L[j];if(!v)return;const s=e.querySelector('.vs');if(s)s.textContent=vStat(v);e.lastChild.textContent=(j<CARDS.length&&carSel===j&&owns(v.id))?'✓':(owns(v.id)?'':'🔒')});
+ const v=vOfCard(carSel),b=$('vbuy');if(!b)return;if(owns(v.id)){b.style.display='none';return}b.style.display='block';
+ if(v.inr&&!(WL.paid&&WL.paid[v.id])){b.textContent='BUY ₹'+v.inr+(v.coins?' + 🪙'+v.coins:'');b.disabled=false}
+ else{b.textContent='UNLOCK 🪙'+v.coins;b.disabled=!WL.ok||WL.coins<v.coins}}
+function wLoadLocal(){try{const j=JSON.parse(localStorage.getItem('dk_test_wallet'));if(j){WL.coins=j.coins|0;WL.owned=Object.assign({charger:true},j.owned)}}catch(e){}WL.paid={};WL.ok=1;wUI()}
+const tSave=()=>{try{localStorage.setItem('dk_test_wallet',JSON.stringify({coins:WL.coins,owned:WL.owned}))}catch(e){}};
+function showR(){$('podc').textContent=MP.rtext;const f=$('fin');if(f.style.display==='block')f.insertAdjacentHTML('beforeend','<div style="font-size:max(14px,2.8vh);color:#ffd400">'+esc(MP.rtext)+'</div>')}
+/* TEST MODE ONLY: local fake coins. Never sent to Firebase, never real. */
+function testClaim(){const rid=MP.rid,ks=Object.keys(MP.res).sort((a,b)=>(+MP.res[a].ts||0)-(+MP.res[b].ts||0)),rk=ks.indexOf(MP.uid)+1,n=MP.ord.length;
+ let c=(!rk||n<2)?0:((n===2?[10,0]:n===3?[10,5,0]:[10,5,3])[rk-1]||0),done={};try{done=JSON.parse(localStorage.getItem('dk_test_claims'))||{}}catch(e){}
+ if(done[rid]!==undefined){MP.rtext='Test reward already collected'}else{done[rid]=c;try{localStorage.setItem('dk_test_claims',JSON.stringify(done))}catch(e){}WL.coins+=c;tSave();wUI();MP.rtext=c>0?'+'+c+' 🧪 TEST coins (not real)':'No test coins this race'}showR()}
+let wOn=0;function wRefresh(){if(ECON==='test'){wLoadLocal();return}if(ECON!=='server')return;fbInit().then(()=>{if(wOn)return;wOn=1;firebase.database().ref('wallets/'+MP.uid).on('value',s=>{const w=s.val()||{};WL.coins=w.coins|0;WL.owned=Object.assign({charger:true},w.owned);WL.paid=w.paid||{};WL.ok=1;wUI()})}).catch(()=>wUI())}
+async function vBuy(){const v=vOfCard(carSel);if(owns(v.id))return;
+ if(v.inr&&!(WL.paid&&WL.paid[v.id]))return pop('Real-money purchases are not connected yet.\nThey need a verified payment backend (Google Play / Razorpay) before anything can be bought.');
+ if(ECON==='test'){if(WL.coins<v.coins)return tst('Not enough test coins');WL.coins-=v.coins;WL.owned[v.id]=true;tSave();wUI();return tst('🧪 '+v.n+' unlocked (TEST)')}if(ECON!=='server')return;try{await fbInit();const d=(await FN.httpsCallable('unlockVehicle')({id:v.id})).data;WL.coins=d.coins;WL.owned=Object.assign({charger:true},d.owned);WL.paid=d.paid||{};WL.ok=1;wUI();
+  tst(d.status==='unlocked'?'🎉 '+v.n+' unlocked!':({'not-enough-coins':'Not enough coins','payment-required':'Purchase required'}[d.status]||'Already owned'))}catch(e){tst('Could not unlock: '+(e.message||'error'))}}
+if(ECON!=='off'){document.body.classList.add('econ');
+VEH.filter(v=>v.ci===null).forEach(v=>{const e=document.createElement('div');e.className='mp';e.innerHTML='<div>'+v.ic+' '+v.n+'<small>Model coming soon</small></div><span>🔒</span>';e.onclick=()=>pop(vInfo(v));$('carl').appendChild(e)});
+[...$('carl').children].forEach((e,j)=>{e.firstChild.insertAdjacentHTML('beforeend','<small class="vs"></small>');if(j<CARDS.length){const o=e.onclick;e.onclick=()=>{o();wUI()}}});
+document.querySelector('.side h3').insertAdjacentHTML('afterend','<div class="bal"></div>');$('dots').insertAdjacentHTML('beforebegin','<button class="btn" id="vbuy" style="display:none"></button>');$('vbuy').onclick=vBuy;
+$('mpn').insertAdjacentHTML('beforebegin','<div class="bal"></div>');
+{const _g=$('hGar').onclick;$('hGar').onclick=()=>{wRefresh();_g();wUI()}}
+{const _s=$('start').onclick;$('start').onclick=function(ev){const v=vOfCard(carSel);if(!owns(v.id)){tst('🔒 '+v.n+' is locked — unlock it in the Garage');setCar(1);wUI();return}return _s.call(this,ev)}}
+{const _r=$('mpr').onclick;$('mpr').onclick=()=>{const v=vOfCard(carSel);if(!owns(v.id)){setCar(1);tst('🔒 '+v.n+' is locked — using Dodge Charger')}_r()}}
+if(ECON==='test'){document.querySelector('.side h3').insertAdjacentHTML('afterend','<div style="font-weight:900;font-size:max(11px,1.9vh);color:#fff;background:#c0392b;border-radius:8px;padding:.3vh 1vw;display:inline-block">🧪 TEST COINS – NOT REAL</div>');
+ $('dots').insertAdjacentHTML('beforebegin','<button class="btn ghost" id="vtest" style="font-size:max(12px,2vh);padding:.7vh 2vw;width:100%;margin-bottom:.6vh">+100 TEST COINS</button>');$('vtest').onclick=()=>{WL.coins+=100;tSave();wUI()};wLoadLocal()}
+}
+wUI();
+/* ===== /VEHICLES & WALLET ===== */
+
 
 requestAnimationFrame(loop);
 },80)</script></body></html>
