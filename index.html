@@ -658,7 +658,7 @@ $('ds').innerHTML='<div style="font-size:15px;opacity:.9">'+(PR?'🛞 PRACTICE �
 if(shk>0){cam.position.x+=(rn()-.5)*shk;cam.position.y+=(rn()-.5)*shk*.6;shk=Math.max(0,shk-d*3)}SUNS.position.copy(cam.position).addScaledVector(SDIR,1250);rd.render(sc,cam)}
 
 /* ===== MULTIPLAYER ===== */
-const FB_CONFIG={apiKey:"",authDomain:"",databaseURL:"",projectId:"",appId:""};/* <-- paste Firebase web config here */
+const FB_CONFIG={apiKey:"AIzaSyBTL8dVL1PzTe4e4YBAAWw5lCBwGladcHw",authDomain:"drift-king-5a194.firebaseapp.com",databaseURL:"https://drift-king-5a194-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drift-king-5a194",storageBucket:"drift-king-5a194.firebasestorage.app",messagingSenderId:"177320450421",appId:"1:177320450421:web:d089913a1086c461591b3c",measurementId:"G-HSVQKKMMFW"};
 const MP={on:0,rid:null,uid:null,off:0,pl:{},st:{},res:{},prof:{},ord:[],rem:[],n:0};
 let prof=(()=>{try{return JSON.parse(localStorage.getItem('dk_prof'))}catch(e){return null}})()||{name:'Driver'+(rn()*900+100|0),desc:'',pic:''},tmpPic='',fbP=null;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
@@ -671,20 +671,22 @@ function nameTag(txt){const c=document.createElement('canvas');c.width=256;c.hei
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(5,1.25,1);s.position.y=3.6;s.renderOrder=10;return s}
 function mpProf(){$('mpav').innerHTML=avIn(prof.pic);$('mpn').textContent=prof.name;$('mpd').textContent=prof.desc||'No description yet'}
 function mpOpen(){au();mpProf();go('mp')}
+const fbErr=e=>{const c=String(e&&(e.code||e.message)||'');if(c==='cfg')return'Multiplayer is not set up yet (Firebase config is missing).';if(/operation-not-allowed|admin-restricted/.test(c))return'Anonymous sign-in is turned off in Firebase. Enable it under Authentication > Sign-in method.';if(/PERMISSION_DENIED|permission/i.test(c))return'The database rules are blocking multiplayer. Update the Realtime Database rules.';if(/network|net|timeout/i.test(c))return'No connection. Check your internet and try again.';return'Could not connect ('+c.slice(0,60)+'). Try again.'};
 function fbInit(){if(fbP)return fbP;fbP=new Promise((ok,no)=>{if(!FB_CONFIG.apiKey)return no(new Error('cfg'));
  const L=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(new Error('net'));document.head.appendChild(s)}),B='https://www.gstatic.com/firebasejs/10.12.2/firebase-';
- L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')])).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);return firebase.auth().signInAnonymously()}).then(c=>{MP.uid=c.user.uid;ok()}).catch(no)});
+ L(B+'app-compat.js').then(()=>Promise.all([L(B+'auth-compat.js'),L(B+'database-compat.js')])).then(()=>{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);return firebase.auth().signInAnonymously()}).then(c=>{MP.uid=c.user.uid;ok()}).catch(no);setTimeout(()=>no(new Error('timeout')),15000)});
  const f=fbP;f.catch(()=>{fbP=null});return f}
 function lobUI(){const ks=mkeys();$('lobl').innerHTML=ks.map(k=>{const q=clean(MP.pl[k]);return'<div class="pr"><div class="av">'+avIn(q.p)+'</div>'+esc(q.n)+(k===MP.uid?' (you)':'')+'</div>'}).join('');$('lobc').textContent=ks.length+'/7 racers · minimum 2'}
 async function mpJoin(){
- try{await fbInit()}catch(e){return pop(e.message==='cfg'?'Multiplayer is not set up yet (Firebase config is missing).':'Could not connect. Check your internet and try again.')}
+ try{await fbInit()}catch(e){console.log(e);return pop(fbErr(e))}
  try{const db=firebase.database();MP.off=(await db.ref('.info/serverTimeOffset').once('value')).val()||0;let rid,start;
   await db.ref('open').transaction(c=>{const t=nw();if(c&&c.start>t+2000&&(c.n||0)<7){rid=c.id;start=c.start;c.n=(c.n||0)+1;return c}rid=db.ref('rooms').push().key;start=t+30000;return{id:rid,start:start,n:1}});
   Object.assign(MP,{rid,start,pl:{},st:{},res:{},on:0,pod:0});const R=db.ref('rooms/'+rid);MP.R=R;
-  await R.child('p/'+MP.uid).set({n:prof.name,d:prof.desc,p:prof.pic,c:ci,j:firebase.database.ServerValue.TIMESTAMP});R.child('p/'+MP.uid).onDisconnect().remove();
+  MP.me={n:prof.name,d:prof.desc,p:prof.pic,c:ci,j:firebase.database.ServerValue.TIMESTAMP};await R.child('p/'+MP.uid).set(MP.me);R.child('p/'+MP.uid).onDisconnect().remove();
+  let was=0;MP.cn=db.ref('.info/connected');MP.cn.on('value',s=>{if(s.val()){if(was===2){tst('Reconnected');if(MP.R){MP.R.child('p/'+MP.uid).set(MP.me);MP.R.child('p/'+MP.uid).onDisconnect().remove()}}was=1}else if(was){was=2;tst('Connection lost... reconnecting')}});
   R.child('p').on('value',s=>{MP.pl=s.val()||{};lobUI();if(MP.on)mpRoster()});go('lob');lobUI();
   clearInterval(MP.tm);MP.tm=setInterval(()=>{const l=MP.start-nw();$('lobt').textContent=Math.max(0,Math.ceil(l/1000));if(l<=0){clearInterval(MP.tm);mpGo()}},250)
- }catch(e){console.log(e);mpLeave();pop('Could not join a race. Please try again.')}}
+ }catch(e){console.log(e);mpLeave();pop(fbErr(e))}}
 function mpGo(){const ks=mkeys();
  if(ks.length<2){mpLeave();go('home');return pop('Not enough racers joined. Back to home — try again!')}
  const db=firebase.database(),rid=MP.rid;db.ref('open').transaction(c=>c&&c.id===rid?null:c);
@@ -699,9 +701,9 @@ function mpReset(){const gp=k=>{const dist=7+(k>>1)*8+(k%2?3:0),f=SI-dist/SL;ret
   if(a.w)a.w.paint(cols[((pr.c%4)+4)%4]);if(a.tag)a.g.remove(a.tag);a.tag=nameTag(pr.n);a.g.add(a.tag);MP.rem.push({u,a,s:0})});
  for(;q<AI.length;q++){AI[q].g.visible=false;AI[q].p=-1e9}}
 function mpFrame(d){if(!MP.on||!MP.R)return;MP.tw=(MP.tw||0)-d;
- if(MP.tw<=0){MP.tw=.07;MP.R.child('live/'+MP.uid).set({x:px,z:pz,y:py,h:h,p:cum,v:Math.hypot(vx,vz)})}
+ if(MP.tw<=0){MP.tw=.07;MP.R.child('live/'+MP.uid).set({x:px,z:pz,y:py,h:h,p:cum,v:Math.hypot(vx,vz),t:Date.now()})}
  const k=Math.min(1,9*d);
- for(const r of MP.rem){const s=MP.st[r.u];if(!s||typeof s.x!=='number'||typeof s.z!=='number')continue;const g=r.a.g;
+ for(const r of MP.rem){const s=MP.st[r.u];if(!s||typeof s.x!=='number'||typeof s.z!=='number')continue;const g=r.a.g,tn=performance.now();if(s.t!==r.lt){r.lt=s.t;r.seen=tn}if(tn-(r.seen||tn)>8000){if(g.visible){g.visible=false;r.a.p=-1e9;tst('A player disconnected')}continue}else if(!g.visible&&MP.pl[r.u])g.visible=true;
   if(!r.s){g.position.set(s.x,s.y||0,s.z);g.rotation.y=s.h||0;r.s=1}else{g.position.x+=(s.x-g.position.x)*k;g.position.y+=((s.y||0)-g.position.y)*k;g.position.z+=(s.z-g.position.z)*k;let dh=(s.h||0)-g.rotation.y;dh=Math.atan2(Math.sin(dh),Math.cos(dh));g.rotation.y+=dh*k}
   r.a.p+=((+s.p||0)-r.a.p)*k;r.a.cv=+s.v||0}}
 function mpRoster(){for(const r of MP.rem)if(!MP.pl[r.u]&&!MP.res[r.u]){r.a.g.visible=false;r.a.p=-1e9}}
@@ -715,7 +717,7 @@ function mpPodium(){MP.pod=1;const ks=Object.keys(MP.res).sort((a,b)=>(+MP.res[a
  $('podr').innerHTML=[1,0,2].filter(i=>top[i]).map(i=>box(top[i],i)).join('');
  $('podo').innerHTML=ks.slice(3).map((u,i)=>'<div class="pr">'+(i+4)+'. '+esc(nm(u).n)+' · '+tm(u)+'</div>').join('')+rest.map(u=>'<div class="pr" style="opacity:.6">DNF · '+esc(nm(u).n)+'</div>').join('');
  $('fin').style.display='none';go('pod')}
-function mpLeave(){clearInterval(MP.tm);clearInterval(MP.ck);
+function mpLeave(){clearInterval(MP.tm);clearInterval(MP.ck);try{if(MP.cn)MP.cn.off()}catch(e){}MP.cn=null;
  try{if(MP.R){const u=MP.uid,R=MP.R;R.child('p/'+u).onDisconnect().cancel();R.child('p/'+u).remove();R.child('live/'+u).remove();R.child('p').off();R.child('live').off();R.child('res').off();
   if(!MP.on&&MP.rid){const rid=MP.rid;firebase.database().ref('open').transaction(c=>c&&c.id===rid&&c.n>0?(c.n--,c):c)}}}catch(e){}
  if(MP.on){AI.forEach((a,k)=>{if(a.tag){a.g.remove(a.tag);a.tag=null}if(a.w)a.w.paint(AC[k])});$('prestart').style.display=''}
