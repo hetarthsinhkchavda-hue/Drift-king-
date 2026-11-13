@@ -94,6 +94,35 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 #pe input::selection,#pe textarea::selection{background:rgba(255,193,90,.5)}
 .econ #carl{max-height:30vh;overflow-y:auto;touch-action:pan-y}#popm{white-space:pre-line}.bal{font-weight:900;color:#ffd400;font-size:max(14px,2.6vh)}
 #vbuy{font-size:max(13px,2.2vh);padding:.8vh 2vw;width:100%;margin-bottom:.6vh}#vbuy[disabled]{opacity:.5}
+
+/* ===== Garage redesign + coin counter ===== */
+:root{--tp:max(8px,env(safe-area-inset-top,0px));--rt:max(14px,env(safe-area-inset-right,0px));--bt:max(12px,env(safe-area-inset-bottom,0px))}
+#coinTop{position:fixed;right:var(--rt);top:var(--tp);z-index:3;display:none;align-items:center;gap:.8vh;padding:.6vh 1.6vh;border-radius:999px;background:linear-gradient(180deg,rgba(48,34,16,.9),rgba(10,18,40,.9));border:1px solid rgba(255,193,90,.75);box-shadow:0 0 14px rgba(255,193,90,.35);pointer-events:none}
+#coinTop.on{display:flex}#coinTop .bal{font-size:max(13px,2.8vh);white-space:nowrap;letter-spacing:.5px}
+#menu #mback{padding:max(6px,1.1vh) max(16px,3vw);font-size:max(13px,2.7vh);letter-spacing:2px;box-shadow:0 0 14px rgba(255,46,99,.4)}
+#menu .hint{bottom:auto;top:calc(var(--tp) + max(38px,7.6vh))}
+#menu .pill{top:calc(var(--tp) + max(32px,6.6vh));right:var(--rt);padding:.4vh 1.2vh;font-size:max(10px,1.9vh);border-radius:10px}
+#menu .side{top:calc(var(--tp) + max(32px,6.6vh) + max(26px,5vh));bottom:var(--bt);transform:none;gap:0}
+#menu .side>.gl{display:flex;flex-direction:column;height:100%;box-sizing:border-box;padding:1.2vh 1.4vh}
+#menu .side h3{display:flex;align-items:center;flex-wrap:wrap;gap:1vh;margin:0 0 .6vh;flex:none}
+#menu .side .bal{display:none}
+#menu #carl{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+#carl .mp{display:grid;grid-template-columns:1fr auto;column-gap:1vh;row-gap:.1vh;align-items:center;flex:none;margin:0 0 .7vh;padding:.8vh 1.2vh;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);font-size:max(12px,2.7vh);line-height:1.15}
+#carl .mp>div{display:contents}
+#carl .mp>div>small{grid-column:1;grid-row:2;font-size:max(9px,1.7vh);opacity:.65;font-weight:500}
+#carl .mp>div>small.vs{grid-column:2;grid-row:1;opacity:1;text-align:right;font-weight:800;color:#ffd400;white-space:nowrap}
+#carl .mp>div>small.vs.own{color:#7be0a0}
+#carl .mp>span{grid-column:2;grid-row:2;justify-self:end;margin:0;font-size:max(9px,1.6vh);font-weight:800;letter-spacing:1px;padding:.2vh .9vh;border-radius:6px;background:rgba(255,255,255,.1);white-space:nowrap}
+#carl .mp>span:empty{display:none}
+#carl .mp.sel{border-color:#ffc15a;background:linear-gradient(90deg,rgba(255,193,90,.22),rgba(255,193,90,.06));box-shadow:0 0 12px rgba(255,193,90,.35) inset}
+#carl .mp.sel>span{background:#ffc15a;color:#1a1208}
+#menu .side .btn{width:100%;box-sizing:border-box;flex:none;margin-top:.7vh;padding:max(8px,1.4vh) 0;font-size:max(14px,2.8vh);letter-spacing:3px;border-radius:12px}
+#menu .side #vbuy{background:linear-gradient(90deg,#ffc15a,#ff8c3c);color:#1a1208;box-shadow:0 0 18px rgba(255,160,60,.45);margin-bottom:0}
+#menu .side #vbuy[disabled]{opacity:.45;box-shadow:none}
+#menu .side #start.lockd{opacity:.45;filter:saturate(.4)}
+#menu .side .dots{justify-content:center;gap:1vh;margin:.5vh 0 0;flex:none}
+#menu .side .dot{width:max(22px,4.4vh);height:max(22px,4.4vh)}
+#menu .side #vtest{margin:.5vh 0 0;padding:max(5px,.8vh) 0;font-size:max(11px,2vh)}
 </style></head><body><div id="load"><b>DRIFT</b><i>KING</i><div class="lb"><u id="lbar"></u></div><small>LOADING…</small></div>
 <script>window.onerror=function(m,u,l,c){var d=document.getElementById('err');if(!d){d=document.createElement('div');d.id='err';d.style.cssText='position:fixed;left:8px;right:8px;bottom:4px;z-index:200;background:rgba(160,0,0,.85);color:#fff;font:11px monospace;padding:4px 8px;border-radius:6px;pointer-events:none';document.body.appendChild(d)}d.textContent=m+' @'+l+':'+c};(function(){var b=document.getElementById('lbar'),t0=Date.now(),done=0,iv=setInterval(function(){b.style.width=Math.min(95,(Date.now()-t0)/4000*95)+'%'},50);window.loadDone=function(){if(done)return;done=1;setTimeout(function(){clearInterval(iv);b.style.width='100%';setTimeout(function(){var l=document.getElementById('load');l.style.opacity=0;setTimeout(function(){l.style.display='none'},400)},250)},Math.max(0,4000-(Date.now()-t0)))};setTimeout(function(){window.loadDone()},12000)})()</script>
 <div id="hbg"><div id="hw"></div></div>
@@ -124,6 +153,7 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 <div class="s" id="pop"><div class="gl" style="text-align:center;padding:3vh 4vw;max-width:80vw;font-weight:800;font-size:max(15px,3vh)" id="popm"></div><button class="btn" id="popok" style="font-size:2.8vh;padding:1.2vh 6vw">OK</button></div>
 <div id="toast"></div>
 
+<div id="coinTop"><span class="bal">🪙 --</span></div>
 <div class="s" id="menu">
  <div class="logo"><div class="cr">👑</div><b>DRIFT</b><i>KING</i></div>
  <div class="pill">🏁 BEST LAP <b id="bst">--</b></div>
@@ -152,7 +182,7 @@ h1 span{display:block;background:linear-gradient(90deg,var(--a),#ff9a3c);-webkit
 <div class="hud" id="cd" style="left:50%;top:26%;transform:translate(-50%,-50%);font-size:15vh;font-weight:900;text-align:center;pointer-events:none;line-height:1"></div>
 <div id="fin" class="gl" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:none;text-align:center;min-width:min(70vw,380px);z-index:5;font-weight:700;line-height:1.5"></div>
 <script>setTimeout(()=>{
-const $=i=>document.getElementById(i),go=id=>{document.querySelectorAll('.s').forEach(e=>e.classList.toggle('on',e.id===id));const hb=document.getElementById('hbg');if(hb)hb.style.display=id==='home'?'block':'none';if(id!=='home'){try{rd.setScissorTest(false);rd.setViewport(0,0,innerWidth,innerHeight);rd.setClearColor(0x000000,1);if(car.parent!==sc)sc.add(car)}catch(e){}}};
+const $=i=>document.getElementById(i),go=id=>{document.querySelectorAll('.s').forEach(e=>e.classList.toggle('on',e.id===id));const hb=document.getElementById('hbg');if(hb)hb.style.display=id==='home'?'block':'none';if(typeof coinVis==='function')coinVis(id);if(id!=='home'){try{rd.setScissorTest(false);rd.setViewport(0,0,innerWidth,innerHeight);rd.setClearColor(0x000000,1);if(car.parent!==sc)sc.add(car)}catch(e){}}};
 const t={L:0,R:0,B:0,G:0,D:0},K={};
 const REL=[];['L','R','B','G','D'].forEach(k=>{const e=$(k),f=v=>ev=>{ev.preventDefault();if(k==='D'){if(v){t.D=t.D?0:1;e.classList.toggle('on',!!t.D)}return}t[k]=v;e.classList.toggle('on',!!v)};let cur=null;
  const dn=ev=>{ev.preventDefault();cur=ev.pointerId;try{e.setPointerCapture(ev.pointerId)}catch(x){}f(1)(ev)},
@@ -813,9 +843,11 @@ const vById=id=>VEH.find(v=>v.id===id)||VEH[0],vOfCard=k=>VEH.find(v=>v.ci===k)|
  vStat=v=>owns(v.id)?'✅ Unlocked':[v.inr?'₹'+v.inr+(WL.paid&&WL.paid[v.id]?' · Purchased':' · Not purchased'):'',v.coins?'🪙 '+v.coins.toLocaleString():''].filter(Boolean).join(' + '),
  vList=()=>[...CARDS.map((c,i)=>vOfCard(i)),...VEH.filter(v=>v.ci===null)];
 function vInfo(v){return v.n+'\n'+vStat(v)+'\n'+(v.inr&&v.coins?'Needs BOTH the ₹'+v.inr+' purchase AND '+v.coins.toLocaleString()+' coins earned by racing.':v.inr?'Real-money purchase (₹'+v.inr+').':'')+'\nPayments are not connected yet. 3D model coming soon.'}
-function wUI(){if(ECON==='off')return;document.querySelectorAll('.bal').forEach(e=>e.textContent=(WL.ok?'🪙 '+WL.coins.toLocaleString():'🪙 --')+(ECON==='test'?' (TEST)':''));
- const L=vList();[...$('carl').children].forEach((e,j)=>{const v=L[j];if(!v)return;const s=e.querySelector('.vs');if(s)s.textContent=vStat(v);e.lastChild.textContent=(j<CARDS.length&&carSel===j&&owns(v.id))?'✓':(owns(v.id)?'':'🔒')});
- const v=vOfCard(carSel),b=$('vbuy');if(!b)return;if(owns(v.id)){b.style.display='none';return}b.style.display='block';
+const coinKey=()=>'dk_coin_cache_'+ECON,coinCache=()=>{try{const c=localStorage.getItem(coinKey());return c===null?'--':(+c).toLocaleString()}catch(e){return'--'}};
+function coinVis(id){try{const c=document.getElementById('coinTop');if(c)c.classList.toggle('on',ECON!=='off'&&(id==='home'||id==='menu'))}catch(e){}}
+function wUI(){if(ECON==='off')return;if(WL.ok)try{localStorage.setItem(coinKey(),String(WL.coins))}catch(e){}document.querySelectorAll('.bal').forEach(e=>e.textContent=(WL.ok?'🪙 '+WL.coins.toLocaleString():'🪙 '+coinCache())+(ECON==='test'?' (TEST)':''));
+ const L=vList();[...$('carl').children].forEach((e,j)=>{const v=L[j];if(!v)return;const s=e.querySelector('.vs');if(s){s.textContent=vStat(v);s.classList.toggle('own',owns(v.id))}e.lastChild.textContent=(j<CARDS.length&&carSel===j&&owns(v.id))?'✓ SELECTED':(owns(v.id)?'SELECT':'🔒 LOCKED')});
+ const v=vOfCard(carSel),b=$('vbuy');$('start').classList.toggle('lockd',!owns(v.id));if(!b)return;if(owns(v.id)){b.style.display='none';return}b.style.display='block';
  if(v.inr&&!(WL.paid&&WL.paid[v.id])){b.textContent='BUY ₹'+v.inr+(v.coins?' + 🪙'+v.coins:'');b.disabled=false}
  else{b.textContent='UNLOCK 🪙'+v.coins;b.disabled=!WL.ok||WL.coins<v.coins}}
 function wLoadLocal(){try{const j=JSON.parse(localStorage.getItem('dk_test_wallet'));if(j){WL.coins=j.coins|0;WL.owned=Object.assign({charger:true},j.owned)}}catch(e){}WL.paid={};WL.ok=1;wUI()}
@@ -840,6 +872,8 @@ $('mpn').insertAdjacentHTML('beforebegin','<div class="bal"></div>');
 if(ECON==='test'){document.querySelector('.side h3').insertAdjacentHTML('afterend','<div style="font-weight:900;font-size:max(11px,1.9vh);color:#fff;background:#c0392b;border-radius:8px;padding:.3vh 1vw;display:inline-block">🧪 TEST COINS – NOT REAL</div>');
  $('dots').insertAdjacentHTML('beforebegin','<button class="btn ghost" id="vtest" style="font-size:max(12px,2vh);padding:.7vh 2vw;width:100%;margin-bottom:.6vh">+100 TEST COINS</button>');$('vtest').onclick=()=>{WL.coins+=100;tSave();wUI()};wLoadLocal()}
 }
+[...$('carl').children].forEach((e,j)=>{e.style.order=j<3?[1,0,2].indexOf(j):j});
+if(ECON!=='off')coinVis('home');
 wUI();
 /* ===== /VEHICLES & WALLET ===== */
 
